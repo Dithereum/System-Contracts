@@ -154,7 +154,7 @@ contract Validators is Params {
 
     // This contract share of validator gain to creator of contract
     // It is advised to call this function your contract constructor to avoid intruders
-    function setContractCreator(address _contract ) private returns(bool)
+    function setContractCreator(address _contract ) public returns(bool)
     {
         require(contractCreator[_contract] == address(0), "invalid call");
         contractCreator[_contract] = tx.origin;
@@ -488,17 +488,19 @@ contract Validators is Params {
 
         // to contract
         //uint _contractPart = reward * contractPartPercent / 100000;
-        for (uint i=0; i<_to.length; i++)
-        {
-            if(_to[i] != address(0) && contractCreator[_to[i]] != address(0))
-            {
-                uint amt = uint256(_gass[i]);
-                amt = amt * contractPartPercent / 100000;
-                payable(contractCreator[_to[i]]).transfer(amt);
-                remaining = remaining - amt;
+        if(_to.length > 0){
+          uint256 _contractPart = reward * contractPartPercent / 100000;
+          remaining = remaining - _contractPart;
+          uint256 amt  = _contractPart / _to.length;
+          if(amt > 0){
+            for (uint i=0; i<_to.length; i++)        {
+                if(_to[i] != address(0) && contractCreator[_to[i]] != address(0) && _gass[i]>0)
+                {
+                    payable(contractCreator[_to[i]]).transfer(amt);
+                }
             }
-
-        }
+          }
+      }
 
         uint lastRewardHold = reflectionPercentSum[val][lastRewardTime[val]];
         lastRewardTime[val] = block.timestamp;
