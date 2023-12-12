@@ -84,7 +84,7 @@ contract Punish is Params {
             return;
         }
 
-        for (uint256 i = 0; i < punishValidators.length; i++) {
+        /*for (uint256 i = 0; i < punishValidators.length; i++) {
             if (
                 punishRecords[punishValidators[i]].missedBlocksCounter >
                 removeThreshold / decreaseRate
@@ -92,10 +92,10 @@ contract Punish is Params {
                 punishRecords[punishValidators[i]].missedBlocksCounter =
                     punishRecords[punishValidators[i]].missedBlocksCounter -
                     removeThreshold /
-                    decreaseRate;
-            } else {
+                    decrease rate;
+            } else {*/
                 punishRecords[punishValidators[i]].missedBlocksCounter = 0;
-            }
+            //}
         }
 
         emit LogDecreaseMissedBlocksCounter();
