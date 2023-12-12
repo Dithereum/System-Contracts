@@ -430,12 +430,12 @@ contract Validators is Params {
             validatorInfo[validator].feeAddr == feeAddr,
             "You are not the fee receiver of this validator"
         );
-        require(
+        /*require(
             validatorInfo[validator].lastWithdrawProfitsBlock +
                 WithdrawProfitPeriod <=
                 block.number,
             "You must wait enough blocks to withdraw your profits after latest withdraw of this validator"
-        );
+        );*/
         uint256 hbIncoming = validatorInfo[validator].hbIncoming;
         require(hbIncoming > 0, "You don't have any profits");
 
@@ -447,7 +447,7 @@ contract Validators is Params {
         if (hbIncoming > 0) {
             feeAddr.transfer(hbIncoming);
         }
-
+        withdrawStakingReward(validator);
         emit LogWithdrawProfits(
             validator,
             feeAddr,
