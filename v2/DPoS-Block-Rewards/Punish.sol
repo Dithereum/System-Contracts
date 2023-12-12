@@ -84,8 +84,8 @@ contract Punish is Params {
             return;
         }
 
-        /*for (uint256 i = 0; i < punishValidators.length; i++) {
-            if (
+        for (uint256 i = 0; i < punishValidators.length; i++) {
+          /*if (
                 punishRecords[punishValidators[i]].missedBlocksCounter >
                 removeThreshold / decreaseRate
             ) {
