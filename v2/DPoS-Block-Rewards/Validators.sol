@@ -320,7 +320,7 @@ contract Validators is Params {
         if (validatorInfo[validator].status == Status.Jailed) {
             require(punish.cleanPunishRecord(validator), "clean failed");
         }
-        validatorInfo[validator].status = Status.Created;
+        validatorInfo[validator].status = Status.Staked;
 
         emit LogReactive(validator, block.timestamp);
 
