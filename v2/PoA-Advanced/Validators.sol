@@ -188,10 +188,17 @@ contract Validators is Params {
 
         Validator storage valInfo = validatorInfo[validator];
         // The staked coins of validator must >= MinimalStakingCoin
-        require(
-            valInfo.coins + staking >= MinimalStakingCoin,
-            "Staking coins not enough"
-        );
+        if(staker == validator){
+            require(
+                valInfo.coins + (staking) >= MinimalStakingCoin,
+                "Staking coins not enough"
+            );
+        }
+        else
+        {
+            require(staking >= MinimalStakingCoin,
+            "Staking coins not enough");
+        }
 
         // stake at first time to this valiadtor
         if (staked[staker][validator].coins == 0) {
@@ -272,7 +279,7 @@ contract Validators is Params {
         if (validatorInfo[validator].status == Status.Jailed) {
             require(punish.cleanPunishRecord(validator), "clean failed");
         }
-        validatorInfo[validator].status = Status.Created;
+        validatorInfo[validator].status = Status.Staked;
 
         emit LogReactive(validator, block.timestamp);
 
