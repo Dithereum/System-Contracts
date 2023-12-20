@@ -34,7 +34,7 @@ contract Validators is Params {
         Description description;
         uint256 hbIncoming;
         uint256 totalJailedHB;
-        uint256 lastWithdrawProfitsBlock;
+      //  uint256 lastWithdrawProfitsBlock;
         // Address list of user who has staked for this validator
         address[] stakers;
     }
@@ -447,7 +447,7 @@ contract Validators is Params {
 
         // update info
         validatorInfo[validator].hbIncoming = 0;
-        validatorInfo[validator].lastWithdrawProfitsBlock = block.number;
+       // validatorInfo[validator].lastWithdrawProfitsBlock = block.number;
 
         // send profits to fee address
         if (hbIncoming > 0) {
@@ -594,7 +594,7 @@ contract Validators is Params {
             uint256,
             uint256,
             uint256,
-            uint256,
+            //uint256,
             address[] memory
         )
     {
@@ -606,7 +606,7 @@ contract Validators is Params {
             v.coins,
             v.hbIncoming,
             v.totalJailedHB,
-            v.lastWithdrawProfitsBlock,
+          //  v.lastWithdrawProfitsBlock,
             v.stakers
         );
     }
