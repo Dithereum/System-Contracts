@@ -892,13 +892,14 @@ contract Validators is Params {
     }
     
     function viewStakeReward(address _staker, address _validator) public view returns(uint256){
-        
-        uint validPercent = reflectionPercentSum[_validator][lastRewardTime[_validator]] - reflectionPercentSum[_validator][stakeTime[_staker][_validator]];
-        if(validPercent > 0)
-        {
-            StakingInfo memory stakingInfo = staked[_staker][_validator];
-            return stakingInfo.coins * validPercent / 100000000000000000000  ;
-
+        if(stakeTime[_staker][_validator] > 0){
+            uint validPercent = reflectionPercentSum[_validator][lastRewardTime[_validator]] - reflectionPercentSum[_validator][stakeTime[_staker][_validator]];
+            if(validPercent > 0)
+            {
+                StakingInfo memory stakingInfo = staked[_staker][_validator];
+                return stakingInfo.coins * validPercent / 100000000000000000000  ;
+    
+            }
         }
         return 0;
     }
