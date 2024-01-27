@@ -160,7 +160,7 @@ abstract contract Ownable is Context {
 contract ValidatorHelper is Ownable {
 
     InterfaceValidator public valContract = InterfaceValidator(0x000000000000000000000000000000000000f000);
-    uint256 public minimumValidatorStaking = 1000000 * 1e18;
+    uint256 public minimumValidatorStaking = 10000 * 1e18;
     uint256 public lastRewardedBlock ;
     uint256 public extraRewardsPerBlock = 1 * 1e18;
     uint256 public rewardFund;
