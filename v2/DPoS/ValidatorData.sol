@@ -160,20 +160,15 @@ abstract contract Ownable is Context {
 contract ValidatorHelper is Ownable {
 
     InterfaceValidator public valContract = InterfaceValidator(0x000000000000000000000000000000000000f000);
-    uint256 public minimumValidatorStaking = 1000000 * 1e18;
-    uint256 public lastRewardedBlock ;
-    uint256 public extraRewardsPerBlock = 1 * 1e18;
-    uint256 public rewardFund;
-    mapping(address=>uint256) public rewardBalance;
-    mapping(address=>uint256) public totalProfitWithdrawn;
-
+    uint256 public minimumValidatorStaking = 32 * 1e18;   
+   
     //events
     event Stake(address validator, uint256 amount, uint256 timestamp);
     event Unstake(address validator, uint256 timestamp);
     event WithdrawProfit(address validator, uint256 amount, uint256 timestamp);
 
     receive() external payable {
-        rewardFund += msg.value;
+       
     }
 
 
@@ -186,7 +181,7 @@ contract ValidatorHelper is Ownable {
         string calldata details
     ) external payable  returns (bool) {
 
-        _distributeRewards();
+       
 
         require(msg.value >= minimumValidatorStaking, "Please stake minimum validator staking" );
 
@@ -211,64 +206,28 @@ contract ValidatorHelper is Ownable {
     }
 
     function withdrawStakingReward(address validator) external {
-        require(validator == tx.origin, "caller should be real validator");
-        uint256 blockRewards = viewValidatorRewards(validator);
-        require(blockRewards > 0, "Nothing to withdraw");
+        require(validator == tx.origin, "caller should be real validator");    
 
-        _distributeRewards();
-	valContract.withdrawProfits(validator);
-
-        rewardFund -= blockRewards;
-
-        rewardBalance[validator] = 0;
-        totalProfitWithdrawn[validator] += blockRewards;
-
-        payable(validator).transfer(blockRewards);
-
-        emit WithdrawProfit( validator,  blockRewards,  block.timestamp);
+        
+	valContract.withdrawProfits(validator);       
+      
     }
 
     function viewValidatorRewards(address validator) public view returns(uint256 rewardAmount){
 
-        (, InterfaceValidator.Status validatorStatus, , , ,  ) = valContract.getValidatorInfo(validator);
+        (, InterfaceValidator.Status validatorStatus, , rewardAmount , ,  ) = valContract.getValidatorInfo(validator);
 
 
         // if validator is jailed, non-exist, or created, then he will not get any rewards
         if(validatorStatus == InterfaceValidator.Status.Jailed || validatorStatus == InterfaceValidator.Status.NotExist || validatorStatus == InterfaceValidator.Status.Created ){
             return 0;
         }
+	rewardAmount += valContract.viewStakeReward(validator,validator);     
 
-
-        // if this smart contract has enough fund and if this validator is not unstaked,
-        // then he will receive the block rewards.
-        // block reward is dynamically calculated based on total blocks mined
-        if(rewardFund >= extraRewardsPerBlock && address(this).balance > extraRewardsPerBlock && validatorStatus != InterfaceValidator.Status.Unstaked){
-            address[] memory highestValidatorsSet = valContract.getTopValidators();
-
-            uint256 totalValidators = highestValidatorsSet.length;
-
-            if(block.number - lastRewardedBlock >= totalValidators ){
-                rewardAmount = (block.number - lastRewardedBlock) * extraRewardsPerBlock / totalValidators;
-            }
-        }
-
-        return rewardBalance[validator] + rewardAmount;
+       // return hbincoming;
     }
 
-    function _distributeRewards() internal {
-
-        address[] memory highestValidatorsSet = valContract.getTopValidators();
-        uint256 totalValidators = highestValidatorsSet.length;
-
-        for(uint8 i=0; i < totalValidators; i++){
-
-            rewardBalance[highestValidatorsSet[i]] = viewValidatorRewards(highestValidatorsSet[i]);
-
-        }
-        lastRewardedBlock = block.number;
-
-    }
-
+   
     /**
         admin functions
     */
@@ -323,7 +282,7 @@ contract ValidatorHelper is Ownable {
     function validatorSpecificInfo1(address validatorAddress, address user) external view returns(string memory identityName, string memory website, string memory otherDetails, uint256 withdrawableRewards, uint256 stakedCoins, uint256 waitingBlocksForUnstake ){
 
         (, string memory identity, string memory websiteLocal, ,string memory details) = valContract.getValidatorDescription(validatorAddress);
-
+	
 
         uint256 unstakeBlock;
 
@@ -346,12 +305,7 @@ contract ValidatorHelper is Ownable {
 
         return (totalStakedCoins, status, selfStakedCoins, 0, stakersArray.length, user);
     }
-
-
-
-    function totalProfitEarned(address validator) public view returns(uint256){
-        return totalProfitWithdrawn[validator] + viewValidatorRewards(validator);
-    }
+    
 
     function waitingWithdrawProfit(address user, address validatorAddress) external view returns(uint256){
         // no waiting to withdraw profit.
