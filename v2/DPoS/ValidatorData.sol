@@ -196,9 +196,7 @@ contract ValidatorHelper is Ownable {
     function unstake(address validator)
         external
         returns (bool)
-    {
-        _distributeRewards();
-
+    {        
         valContract.unstake(validator);
 
         emit Unstake(msg.sender, block.timestamp);
@@ -213,9 +211,9 @@ contract ValidatorHelper is Ownable {
       
     }
 
-    function viewValidatorRewards(address validator) public view returns(uint256 rewardAmount){
+    function viewValidatorRewards(address validator) public view returns(uint256){
 
-        (, InterfaceValidator.Status validatorStatus, , rewardAmount , ,  ) = valContract.getValidatorInfo(validator);
+        (, InterfaceValidator.Status validatorStatus, , uint256 rewardAmount , ,  ) = valContract.getValidatorInfo(validator);
 
 
         // if validator is jailed, non-exist, or created, then he will not get any rewards
@@ -231,8 +229,7 @@ contract ValidatorHelper is Ownable {
     /**
         admin functions
     */
-    function rescueCoins() external onlyOwner{
-        rewardFund -= address(this).balance;
+    function rescueCoins() external onlyOwner{        
         payable(msg.sender).transfer(address(this).balance);
     }
     function changeMinimumValidatorStaking(uint256 amount) external onlyOwner{
