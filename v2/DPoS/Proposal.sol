@@ -11,6 +11,7 @@ contract Proposal is Params {
     // record
     mapping(address => bool) public pass;
     mapping(address => bool) public lastProposalActive;
+    uint256 public proposalCount ;
     struct ProposalInfo {
         // who propose this proposal
         address proposer;
@@ -37,30 +38,30 @@ contract Proposal is Params {
         bool auth;
     }
 
-    mapping(bytes32 => ProposalInfo) public proposals;
-    mapping(address => mapping(bytes32 => VoteInfo)) public votes;
+    mapping(uint256 => ProposalInfo) public proposals;
+    mapping(address => mapping(uint256 => VoteInfo)) public votes;
 
     Validators validators;
 
     event LogCreateProposal(
-        bytes32 indexed id,
+        uint256 indexed id,
         address indexed proposer,
         address indexed dst,
         uint256 time
     );
     event LogVote(
-        bytes32 indexed id,
+        uint256 indexed id,
         address indexed voter,
         bool auth,
         uint256 time
     );
     event LogPassProposal(
-        bytes32 indexed id,
+        uint256 indexed id,
         address indexed dst,
         uint256 time
     );
     event LogRejectProposal(
-        bytes32 indexed id,
+        uint256 indexed id,
         address indexed dst,
         uint256 time
     );
@@ -90,9 +91,7 @@ contract Proposal is Params {
         //require(!pass[dst], "Dst already passed, You can start staking"); 
         require(!lastProposalActive[dst], "Already active proposal");
         // generate proposal id
-        bytes32 id = keccak256(
-            abi.encodePacked(msg.sender, dst, details, block.timestamp)
-        );
+        uint256 id = proposalCount ;
         require(bytes(details).length <= 3000, "Details too long");
         require(proposals[id].createTime == 0, "Proposal already exists");
 
@@ -104,10 +103,11 @@ contract Proposal is Params {
         lastProposalActive[dst] = true;
         proposals[id] = proposal;
         emit LogCreateProposal(id, msg.sender, dst, block.timestamp);
+        proposalCount += 1;
         return true;
     }
 
-    function voteProposal(bytes32 id, bool auth)
+    function voteProposal(uint256 id, bool auth)
         external
         onlyValidator
         returns (bool)
