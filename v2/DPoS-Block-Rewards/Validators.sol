@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "Params.sol";
-import "Punish.sol";
+import "./Params.sol";
+import "./Punish.sol";
 
 contract Validators is Params {
 
