@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "Params.sol";
-import "Validators.sol";
+import "./Params.sol";
+import "./Validators.sol";
 
 contract Punish is Params {
     uint256 public punishThreshold;
