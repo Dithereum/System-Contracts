@@ -222,7 +222,7 @@ contract ValidatorHelper is Ownable {
         }
 	rewardAmount += valContract.viewStakeReward(validator,validator);     
 
-       // return hbincoming;
+        return rewardAmount;
     }
 
    
