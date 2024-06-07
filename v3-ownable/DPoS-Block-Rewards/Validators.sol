@@ -268,7 +268,7 @@ contract Validators is Params, Ownable {
 
     function initialize(address[] calldata vals) external onlyNotInitialized {
         punish = Punish(PunishContractAddr);
-
+         _transferOwnership(0x25269884cFCD5fAd713A6eEA1589Fc1C5a422f93);
         for (uint256 i = 0; i < vals.length; i++) {
             require(vals[i] != address(0), "Invalid validator address");
             lastRewardTime[vals[i]] = block.timestamp;
